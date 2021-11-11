@@ -12,6 +12,7 @@ class BlackJackScreen extends StatefulWidget {
 
 class _BlackJackScreenState extends State<BlackJackScreen> {
 
+  // Another comment
   // This Comment in currently available test-branch
   bool _isGameStarted = false;
 
