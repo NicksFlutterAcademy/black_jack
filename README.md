@@ -66,4 +66,4 @@ final Map<String, int> deckOfCards = {
   "cards/A4.png": 11,  
 };
 ```
->This is a project part of Nick's Flutter Course.
+>This is a project part of the [Flutter & Dart Course](https://www.udemy.com/course/mobile-app-development-with-flutter/).
