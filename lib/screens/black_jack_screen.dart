@@ -21,6 +21,46 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
   void initState() {
     super.initState();
     GameLogic.instance.startGame();
+    GameLogic.instance.winnerStream.listen((winner) {
+      print('WINNER: $winner');
+      switch (winner) {
+        case Winner.player:
+        case Winner.house:
+          _showWinnerDialog(winner);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  Future<void> _showWinnerDialog(Winner winner) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            winner == Winner.player
+                ? 'Congratulations! \n You win!'
+                : 'Oops! You lost!',
+            style: TextStyle(
+                color: winner == Winner.player
+                    ? Colors.green[900]
+                    : Colors.red[900]),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('New round'),
+              onPressed: () {
+                GameLogic.instance.startNewRound();
+                Navigator.of(context).pop();
+                setState(() {});
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -61,24 +101,26 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                 child: Text("Start Game"),
               ),
             ),
-      bottomNavigationBar: _isGameStarted ? Row(
-        children: [
-          BoardButton(
-            onPressed: () {
-              GameLogic.instance.addCard();
-              setState(() {});
-            },
-            label: "Add Card",
-          ),
-          BoardButton(
-            onPressed: () {
-              GameLogic.instance.startNewRound();
-              setState(() {});
-            },
-            label: "Next Round",
-          ),
-        ],
-      ) : null,
+      bottomNavigationBar: _isGameStarted
+          ? Row(
+              children: [
+                BoardButton(
+                  onPressed: () {
+                    GameLogic.instance.addCard();
+                    setState(() {});
+                  },
+                  label: "Add Card",
+                ),
+                BoardButton(
+                  onPressed: () {
+                    GameLogic.instance.startNewRound();
+                    setState(() {});
+                  },
+                  label: "Next Round",
+                ),
+              ],
+            )
+          : null,
     );
   }
 }

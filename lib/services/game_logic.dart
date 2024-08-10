@@ -1,10 +1,18 @@
 // Deck of cards
+import 'dart:async';
 import 'dart:math';
+
+enum Winner { none, house, player }
 
 class GameLogic {
   static final GameLogic _instance = GameLogic._();
 
   GameLogic._();
+
+  // Winner
+  StreamController<Winner> _controller = StreamController()..add(Winner.none);
+
+  Stream get winnerStream => _controller.stream;
 
   static GameLogic get instance => _instance;
 
@@ -101,6 +109,9 @@ class GameLogic {
 
 // Reset the round and reset cards
   void startNewRound() {
+    // Reset winner
+    _resetWinner();
+
     // For animations
     _baseCardsAdded = false;
     // Start new  round with full deckOfCards
@@ -168,6 +179,8 @@ class GameLogic {
 
       _dealerScore = _dealerScore + _deckOfCards[thirdDealersCard]!;
     }
+
+    _checkScore();
   }
 
   // Add extra card to player
@@ -175,16 +188,27 @@ class GameLogic {
     _baseCardsAdded = true;
     final Random random = Random();
 
-    if (_playingCards.length > 0) {
-      final String cardKey = _playingCards.keys.elementAt(
-        random.nextInt(_playingCards.length),
-      );
+    final String cardKey = _playingCards.keys.elementAt(
+      random.nextInt(_playingCards.length),
+    );
 
-      _playingCards.removeWhere((key, value) => key == cardKey);
+    _playingCards.removeWhere((key, value) => key == cardKey);
 
-      _myCards.add(cardKey);
+    _myCards.add(cardKey);
 
-      _playerScore = _playerScore + _deckOfCards[cardKey]!;
+    _playerScore = _playerScore + _deckOfCards[cardKey]!;
+    _checkScore();
+  }
+
+  void _resetWinner() => _controller.add(Winner.none);
+
+  void _checkScore() {
+    if (_playerScore > _dealerScore && _playerScore <= 21) {
+      _controller.add(Winner.player);
+    } else if (_dealerScore > 21) {
+      _controller.add(Winner.player);
+    } else if (_playerScore > 21) {
+      _controller.add(Winner.house);
     }
   }
 }
